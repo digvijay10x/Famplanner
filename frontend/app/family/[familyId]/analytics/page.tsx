@@ -76,11 +76,9 @@ export default function AnalyticsPage() {
       const walletsRes = await api.get(`/wallet/family/${familyId}`);
       setWallets(walletsRes.data.wallets);
 
-      // Fetch transactions for each wallet
       const allTransactions: Transaction[] = [];
       for (const wallet of walletsRes.data.wallets) {
         const txRes = await api.get(`/transaction/wallet/${wallet.id}`);
-        // Add wallet name to each transaction
         const txWithWallet = txRes.data.transactions.map((t: Transaction) => ({
           ...t,
           wallet: { name: wallet.name },
@@ -95,7 +93,6 @@ export default function AnalyticsPage() {
     }
   };
 
-  // Calculate spending by category
   const approvedTransactions = transactions.filter(
     (t) => t.status === "approved"
   );
@@ -114,7 +111,6 @@ export default function AnalyticsPage() {
     value,
   }));
 
-  // Calculate spending by wallet
   const walletData = approvedTransactions.reduce(
     (acc: { [key: string]: number }, t) => {
       const walletName = t.wallet?.name || "Unknown";
@@ -130,7 +126,6 @@ export default function AnalyticsPage() {
     budget: wallet.monthlyBudget,
   }));
 
-  // Calculate spending by member
   const memberData = approvedTransactions.reduce(
     (acc: { [key: string]: number }, t) => {
       const userName = t.user?.name || "Unknown";
@@ -145,7 +140,6 @@ export default function AnalyticsPage() {
     value,
   }));
 
-  // Calculate totals
   const totalSpent = approvedTransactions.reduce((sum, t) => sum + t.amount, 0);
   const totalBudget = wallets.reduce((sum, w) => sum + w.monthlyBudget, 0);
 
@@ -162,7 +156,6 @@ export default function AnalyticsPage() {
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-8">
           <Link
             href={`/family/${familyId}`}
@@ -172,11 +165,10 @@ export default function AnalyticsPage() {
           </Link>
           <h1 className="text-2xl font-bold">Analytics</h1>
           <p className="text-neutral-400">
-            Visualize your family's spending patterns
+            Visualize your family spending patterns
           </p>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid md:grid-cols-3 gap-4 mb-8">
           <div className="p-5 rounded-xl border border-neutral-800 bg-neutral-900">
             <p className="text-neutral-400 text-sm mb-1">Total Spent</p>
@@ -210,7 +202,6 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Spending by Category */}
             <div className="p-5 rounded-xl border border-neutral-800 bg-neutral-900">
               <h2 className="text-lg font-semibold mb-4">
                 Spending by Category
@@ -244,8 +235,8 @@ export default function AnalyticsPage() {
                       borderRadius: "8px",
                     }}
                     labelStyle={{ color: "#fff" }}
-                    formatter={(value: number) => [
-                      `₹${value.toLocaleString()}`,
+                    formatter={(value) => [
+                      `₹${(Number(value) || 0).toLocaleString()}`,
                       "Amount",
                     ]}
                   />
@@ -253,7 +244,6 @@ export default function AnalyticsPage() {
               </ResponsiveContainer>
             </div>
 
-            {/* Spending by Member */}
             <div className="p-5 rounded-xl border border-neutral-800 bg-neutral-900">
               <h2 className="text-lg font-semibold mb-4">Spending by Member</h2>
               <ResponsiveContainer width="100%" height={250}>
@@ -285,8 +275,8 @@ export default function AnalyticsPage() {
                       borderRadius: "8px",
                     }}
                     labelStyle={{ color: "#fff" }}
-                    formatter={(value: number) => [
-                      `₹${value.toLocaleString()}`,
+                    formatter={(value) => [
+                      `₹${(Number(value) || 0).toLocaleString()}`,
                       "Amount",
                     ]}
                   />
@@ -294,7 +284,6 @@ export default function AnalyticsPage() {
               </ResponsiveContainer>
             </div>
 
-            {/* Budget vs Spent */}
             <div className="p-5 rounded-xl border border-neutral-800 bg-neutral-900 md:col-span-2">
               <h2 className="text-lg font-semibold mb-4">
                 Budget vs Spent by Wallet
@@ -319,7 +308,9 @@ export default function AnalyticsPage() {
                       borderRadius: "8px",
                     }}
                     labelStyle={{ color: "#fff" }}
-                    formatter={(value: number) => `₹${value.toLocaleString()}`}
+                    formatter={(value) =>
+                      `₹${(Number(value) || 0).toLocaleString()}`
+                    }
                   />
                   <Legend />
                   <Bar
